@@ -32,21 +32,22 @@ def print_kms(data):
     total_distance = 0
     for lap in data['lap_mesgs']: total_distance = total_distance + lap['total_distance']
     print("Total distance:\t\t%s\n" % (get_human_distance(total_distance)) )
-    lap_times = []
     print("SPEED")
-    for lap in data['lap_mesgs']:
-        if lap['total_distance'] != 1000: break
-        lap_times.append(lap['total_elapsed_time'])
-    if len(lap_times) > 0:
+    if len(data['lap_mesgs']) > 0:
         print()
-        for (i, lap_time) in enumerate(lap_times):
-            print('Km %d:\t\t\t%s' % (i + 1, get_human_time(lap_time)))
+        for (i, lap_data) in enumerate(data['lap_mesgs']):
+            distance = '(distance %d m)' % (lap_data['total_distance']) if lap_data['total_distance'] != 1000 else ''
+            print('Km %d:\t\t\t%s %s' % (i + 1, get_human_time(lap_data['total_elapsed_time']), distance))
         total_time = 0
         print()
-        for (i, lap_time) in enumerate(lap_times):
-            if (i > 0) and (i % 5 == 0): print('Time per %02d Km:\t\t%s (%s/Km)' % (i, get_human_time(total_time), get_human_time(total_time / i)))
-            total_time = total_time + lap_time
-        print('\nTime per %d Km\t\t%s (%s/Km)\n' % (len(lap_times), get_human_time(total_time), get_human_time(total_time / len(lap_times))))
+        distance, printable_distance, total_time = 0, 5000, 0
+        for lap_data in data['lap_mesgs']:
+            if distance + lap_data['total_distance'] > printable_distance: 
+                print('Time per %.02f km:\t%s (%s/Km)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
+                printable_distance = printable_distance + 5000
+            distance = distance + lap_data['total_distance']
+            total_time = total_time + lap_data['total_elapsed_time']
+        print('\nTime per %.02f Km\t%s (%s/Km)\n' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
     else:
         print('Lap times aren\'t valids')
 
