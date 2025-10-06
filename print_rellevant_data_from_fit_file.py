@@ -40,11 +40,12 @@ def print_kms(data):
             print('Km %d:\t\t\t%s %s' % (i + 1, get_human_time(lap_data['total_elapsed_time']), distance))
         total_time = 0
         print()
-        distance, printable_distance, total_time = 0, 5000, 0
+        distance, printable_distance, previous_total_time, total_time = 0, 5000, 0, 0
         for lap_data in data['lap_mesgs']:
             if distance + lap_data['total_distance'] > printable_distance: 
-                print('Time per %.02f km:\t%s (%s/Km)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
-                printable_distance = printable_distance + 5000
+                if previous_total_time > 0: print('Time per %.02f km:\t%s (%s/Km) (+%s)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000)), get_human_time(total_time - previous_total_time)))
+                else: print('Time per %.02f km:\t%s (%s/Km)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
+                previous_total_time, printable_distance = total_time, printable_distance + 5000
             distance = distance + lap_data['total_distance']
             total_time = total_time + lap_data['total_elapsed_time']
         print('\nTime per %.02f Km\t%s (%s/Km)\n' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
