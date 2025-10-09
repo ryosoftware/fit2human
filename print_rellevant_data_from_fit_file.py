@@ -54,6 +54,8 @@ def print_kms(data):
 
 def print_hr(data):
     print("HEART RATE\n")
+    total_running_time = 0
+    for lap_data in data['lap_mesgs']: total_running_time = total_running_time + lap_data['total_elapsed_time']
     for subdata in data['time_in_zone_mesgs']:
         if subdata['reference_mesg'] == 'session':
             total_time, hr_times, hr_limits = 0, [ 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0 ]
@@ -62,6 +64,8 @@ def print_hr(data):
                 j = max(0, min(i - 1, len(hr_times) - 1))
                 hr_times[j] = hr_times[j] + subdata['time_in_hr_zone'][i]
                 hr_limits[j] = subdata['hr_zone_high_boundary'][i]
+            if int(total_running_time) > int(total_time): print('Time in Unknown Zone:%s (%.02f%%)' % (get_human_time(total_running_time - total_time), (total_running_time - total_time) * 100 / total_running_time))
+            total_time = total_running_time
             for i in range (0, len(hr_times)):
                 hr_time = hr_times[i]
                 print('Time in Zone %d (%s):%s\t\t%s (%.02f%%)' % (i + 1, get_hr_interval(hr_limits[i - 1] if i > 0 else 0, hr_limits[i] if i + 1 < len(hr_limits) else 0), '' if i > 0 and i + 1 < len(hr_limits) else '  ', get_human_time(hr_time), hr_time * 100 / total_time))
