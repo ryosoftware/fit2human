@@ -29,9 +29,13 @@ def get_local_datetime(reference):
     return reference.astimezone() if isinstance(reference, datetime) else get_datetime(reference).astimezone()
 
 def print_kms(data):
-    total_distance = 0
-    for lap in data['lap_mesgs']: total_distance = total_distance + lap['total_distance']
-    print("Total distance:\t\t%s\n" % (get_human_distance(total_distance)) )
+    total_distance, total_time = 0, 0
+    for lap in data['lap_mesgs']: 
+        total_distance = total_distance + lap['total_distance']
+        total_time = total_time + lap['total_elapsed_time']
+    print("Total distance:\t\t%s" % (get_human_distance(total_distance)))
+    print("Total time:\t\t%s" % (get_human_time(total_time)))
+    print("Cadence:\t\t%s\n" % (get_human_time(1000 * total_time / total_distance)))
     print("SPEED")
     if len(data['lap_mesgs']) > 0:
         print()
