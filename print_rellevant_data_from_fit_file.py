@@ -35,7 +35,7 @@ def print_kms(data):
         total_time = total_time + lap['total_elapsed_time']
     print("Total distance:\t\t%s" % (get_human_distance(total_distance)))
     print("Total time:\t\t%s" % (get_human_time(total_time)))
-    print("Cadence:\t\t%s\n" % (get_human_time(1000 * total_time / total_distance)))
+    print("Pace:\t\t%s\n" % (get_human_time(1000 * total_time / total_distance)))
     print("SPEED")
     if len(data['lap_mesgs']) > 0:
         print()
