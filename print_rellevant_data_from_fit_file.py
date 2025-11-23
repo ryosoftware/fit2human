@@ -30,12 +30,12 @@ def get_local_datetime(reference):
 
 def print_kms(data):
     total_distance, total_time = 0, 0
-    for lap in data['lap_mesgs']: 
+    for lap in data['lap_mesgs']:
         total_distance = total_distance + lap['total_distance']
         total_time = total_time + lap['total_elapsed_time']
     print("Total distance:\t\t%s" % (get_human_distance(total_distance)))
     print("Total time:\t\t%s" % (get_human_time(total_time)))
-    print("Pace:\t\t%s\n" % (get_human_time(1000 * total_time / total_distance)))
+    print("Pace:\t\t\t%s\n" % (get_human_time(1000 * total_time / total_distance)))
     print("SPEED")
     if len(data['lap_mesgs']) > 0:
         print()
@@ -46,18 +46,33 @@ def print_kms(data):
         print()
         distance, printable_distance, previous_total_time, total_time = 0, 5000, 0, 0
         for lap_data in data['lap_mesgs']:
-            if distance + lap_data['total_distance'] > printable_distance: 
-                if previous_total_time > 0: print('Time per %.02f km:\t%s (%s/Km) (+%s)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000)), get_human_time(total_time - previous_total_time)))
-                else: print('Time per %.02f km:\t%s (%s/Km)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
+            if distance + lap_data['total_distance'] > printable_distance:
+                if distance:
+                    if previous_total_time > 0: print('Time per %.02f km:\t%s (%s/Km) (+%s)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000)), get_human_time(total_time - previous_total_time)))
+                    else: print('Time per %.02f km:\t%s (%s/Km)' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
                 previous_total_time, printable_distance = total_time, printable_distance + 5000
             distance = distance + lap_data['total_distance']
             total_time = total_time + lap_data['total_elapsed_time']
-        print('\nTime per %.02f Km\t%s (%s/Km)\n' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
+        if distance: print('\nTime per %.02f Km\t%s (%s/Km)\n' % (distance / 1000, get_human_time(total_time), get_human_time(total_time / (distance / 1000))))
     else:
         print('Lap times aren\'t valids')
 
 def print_hr(data):
-    print("HEART RATE\n")
+    print('HEART RATE\n')
+
+    if (len(data["record_mesgs"])):
+        heart_rate_sources = { 'external heart rate': 0, 'wrist heart rate': 0 }
+        for record_mesg in data["record_mesgs"]:
+            for heart_rate_key in [ 'external heart rate', 'wrist heart rate' ]:
+                if heart_rate_key in record_mesg:
+                    heart_rate_sources[heart_rate_key] = heart_rate_sources[heart_rate_key] + 1
+                    break
+        heart_rate_sources_strings = []
+        for heart_rate_key in [ 'external heart rate', 'wrist heart rate' ]:
+            percent = heart_rate_sources[heart_rate_key] * 100 / len(data["record_mesgs"])
+            if percent != 0: heart_rate_sources_strings.append('%s (%.02f%%)' % (heart_rate_key, percent))
+        print('Sources: %s\n' % (', '.join(heart_rate_sources_strings)))
+
     total_running_time = 0
     for lap_data in data['lap_mesgs']: total_running_time = total_running_time + lap_data['total_elapsed_time']
     for subdata in data['time_in_zone_mesgs']:
