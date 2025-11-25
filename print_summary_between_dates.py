@@ -33,9 +33,6 @@ def get_human_readable_time(seconds: int) -> str:
         divider //= 60
     return time_str
 
-def get_human_readable_distance(distance: float) -> str:
-    return "%.02f Km" % ( distance / 1000 );
-
 def get_times_for_distances(data: str) -> dict:
     distances = {}
     for line in data.splitlines():
@@ -59,18 +56,20 @@ def get_times_for_distances(data: str) -> dict:
     return distances
 
 def main():
-    if len(sys.argv) < 4:
-        print(f"Exec with {sys.argv[0]} directory min-date max-date")
-        print("\nDate format: yyyy-mm-dd")
+    if len(sys.argv) != 2 and len(sys.argv) != 4:
+        print("Exec with %s directory min-date max-date" % ( sys.argv[0] ))
+        print("Exec with %s directory" % ( sys.argv[0] ))
+        print("\n")
+        print("Date format: yyyy-mm-dd")
         sys.exit(-1)
 
-    directory, min_date, max_date = sys.argv[1:4]
-    min_time = get_time_from_human_readable_date(min_date)
-    max_time = get_time_from_human_readable_date(max_date)
+    directory = sys.argv[1]
+    min_time = get_time_from_human_readable_date(sys.argv[2] if len(sys.argv) == 4 else '1970-01-01')
+    max_time = get_time_from_human_readable_date(sys.argv[3] if len(sys.argv) == 4 else '2099-12-31')
 
-
-    if not os.path.isdir(directory) or not min_date or not max_date or min_date > max_date:
+    if not os.path.isdir(directory) or not min_time or not max_time or min_time > max_time:
         print("Exec with %s directory min-date max-date" % ( sys.argv[0] ))
+        print("Exec with %s directory" % ( sys.argv[0] ))
         print("\n")
         print("Date format: yyyy-mm-dd")
         sys.exit(-1)
@@ -79,12 +78,13 @@ def main():
     distances = {}
     count = 0
 
+    files.sort()
     for file in files:
         if file not in (".", ".."):
             match = re.match(r"^(\d{4}-\d{2}-\d{2})_.+_(.+)\.fit$", file)
             if match:
-                date, type_ = match.groups()
-                if type_ in ("Carrera", "Entrenamiento"):
+                date, data_type = match.groups()
+                if data_type in ("Carrera", "Entrenamiento", "Series"):
                     time = get_time_from_human_readable_date(date)
                     if time and (time >= min_time) and (time <= max_time):
                         output = subprocess.getoutput("python3 %s %s" % ( get_fit_file_summary_data, os.path.join(directory, file) ))
@@ -94,13 +94,13 @@ def main():
                                 distances["total"] = distances.get("total", 0) + partial_distances["total"]
                                 distances["max"] = max(distances.get("max", 0), partial_distances["total"])
                             for k in ("1", "5", "10"):
-                                if partial_distances.get(k, 0) != -1 and ((k not in distances) or (partial_distances[k] < distances[k]["distance"])):
+                                if partial_distances.get(k, 0) != -1 and ((k not in distances) or ((k in partial_distances) and (partial_distances[k] < distances[k]["distance"]))):
                                     distances[k] = { "distance": partial_distances[k], "date": date }
                             count += 1
 
-    print("Distancia total: %s" % ( get_human_readable_distance(distances.get('total', 0)) ))
+    print("Distancia total: %.02f Km" % ( distances.get('total', 0) ))
     print("Número de salidas: %d" % ( count ))
-    print("Distancia máxima: %s" % ( get_human_readable_distance(distances.get('max', 0)) ))
+    print("Distancia máxima: %.02f Km" % ( distances.get('max', 0) ))
     print("\n")
     for k in ("1", "5", "10"):
         if k in distances:
@@ -109,4 +109,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
