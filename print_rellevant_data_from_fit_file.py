@@ -7,7 +7,7 @@ import sys
 import os
 
 def get_human_distance(distance):
-    if distance > 1000: return '%d,%d Km' % (int(distance / 1000), int(distance % 1000))
+    if distance > 1000: return '%.02f Km' % (distance / 1000)
     return '%d m' % (distance)
 
 def get_human_time(time):
