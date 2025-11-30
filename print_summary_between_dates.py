@@ -26,8 +26,8 @@ def get_seconds_from_human_readable_time(time: str) -> int:
 def get_human_readable_time(seconds: int) -> str:
     time_str = ""
     divider = 3600
-    while seconds > 0 and divider >= 1:
-        if seconds // divider > 0:
+    while (seconds > 0 and divider > 1) or (divider == 1):
+        if (seconds // divider > 0) or (divider == 1):
             time_str += "%s%02d" % ( ":" if time_str else "", seconds // divider )
             seconds = seconds % divider
         divider //= 60
