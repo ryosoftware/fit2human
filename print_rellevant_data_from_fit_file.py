@@ -91,7 +91,6 @@ def print_hr(data):
             return
     print('HR times aren\'t valids')
 
-
 def main():
     if len(sys.argv) < 2:
         print('No input file received')
