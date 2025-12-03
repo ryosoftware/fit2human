@@ -56,20 +56,20 @@ def get_times_for_distances(data: str) -> dict:
     return distances
 
 def main():
-    if len(sys.argv) != 2 and len(sys.argv) != 4:
-        print("Exec with %s directory min-date max-date" % ( sys.argv[0] ))
-        print("Exec with %s directory" % ( sys.argv[0] ))
+    if len(sys.argv) < 2 and len(sys.argv) > 4:
+        print("Exec with %s directory [min-date]" % ( sys.argv[0] ))
+        print("Exec with %s directory min-date [max-date]" % ( sys.argv[0] ))
         print("\n")
         print("Date format: yyyy-mm-dd")
         sys.exit(-1)
 
     directory = sys.argv[1]
-    min_time = get_time_from_human_readable_date(sys.argv[2] if len(sys.argv) == 4 else '1970-01-01')
-    max_time = get_time_from_human_readable_date(sys.argv[3] if len(sys.argv) == 4 else '2099-12-31')
+    min_time = get_time_from_human_readable_date(sys.argv[2] if len(sys.argv) >= 3 else '1970-01-01')
+    max_time = get_time_from_human_readable_date(sys.argv[3] if len(sys.argv) >= 4 else '2099-12-31')
 
     if not os.path.isdir(directory) or not min_time or not max_time or min_time > max_time:
-        print("Exec with %s directory min-date max-date" % ( sys.argv[0] ))
-        print("Exec with %s directory" % ( sys.argv[0] ))
+        print("Exec with %s directory [min-date]" % ( sys.argv[0] ))
+        print("Exec with %s directory min-date [max-date]" % ( sys.argv[0] ))
         print("\n")
         print("Date format: yyyy-mm-dd")
         sys.exit(-1)
