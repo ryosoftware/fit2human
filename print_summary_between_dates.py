@@ -55,24 +55,24 @@ def get_times_for_distances(data: str) -> dict:
                 if distances.get("10", 0) != -1: distances["10"] = distances.get("10", 0) + seconds
     return distances
 
+def print_how_to_then_exit(error):
+    if error: print("%s\n" % (error))
+    print("Exec with %s directory [min-date]" % ( sys.argv[0] ))
+    print("Exec with %s directory min-date [max-date]" % ( sys.argv[0] ))
+    print("\n")
+    print("Date format: yyyy-mm-dd")
+    sys.exit(-1)
+
 def main():
-    if len(sys.argv) < 2 and len(sys.argv) > 4:
-        print("Exec with %s directory [min-date]" % ( sys.argv[0] ))
-        print("Exec with %s directory min-date [max-date]" % ( sys.argv[0] ))
-        print("\n")
-        print("Date format: yyyy-mm-dd")
-        sys.exit(-1)
+    if len(sys.argv) < 2: print_how_to_then_exit("not enougth arguments")
+    if len(sys.argv) > 4: print_how_to_then_exit("too many arguments")
 
     directory = sys.argv[1]
     min_time = get_time_from_human_readable_date(sys.argv[2] if len(sys.argv) >= 3 else '1970-01-01')
     max_time = get_time_from_human_readable_date(sys.argv[3] if len(sys.argv) >= 4 else '2099-12-31')
 
-    if not os.path.isdir(directory) or not min_time or not max_time or min_time > max_time:
-        print("Exec with %s directory [min-date]" % ( sys.argv[0] ))
-        print("Exec with %s directory min-date [max-date]" % ( sys.argv[0] ))
-        print("\n")
-        print("Date format: yyyy-mm-dd")
-        sys.exit(-1)
+    if not os.path.isdir(directory): print_how_to_then_exit("%s: isn't a valid folder" % (directory))
+    if not min_time or not max_time or min_time > max_time: print_how_to_then_exit("min_date will be lower than max_date")
 
     files = os.listdir(directory)
     distances = {}
