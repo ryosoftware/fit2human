@@ -19,8 +19,8 @@ def get_human_time(time):
 
 def get_hr_interval(min, max):
     if min == 0: return 'HR less than %d bpm' % (max)
-    if max == 0: return 'HR higher to %d bpm' % (min)
-    return 'HR from %d to %d bpm' % (min, max)
+    if max == 0: return 'HR higher or equals to %d bpm' % (min)
+    return 'HR from %d to %d bpm' % (min, max - 1)
 
 def get_datetime(string):
     return datetime.fromisoformat(string)
