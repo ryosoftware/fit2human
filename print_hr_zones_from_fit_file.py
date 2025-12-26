@@ -64,8 +64,8 @@ def print_summary_by_zone(description, summary_by_zone, zones):
         total = sum(summary_by_zone)
         for index, seconds in enumerate(summary_by_zone):
             if index == 0: hr_zone_string = "HR menor que %d" % (zones[0])
-            elif index < len(zones): hr_zone_string = "HR entre %d y %d" % (zones[index - 1], zones[index])
-            else: hr_zone_string = "HR mayor que %d" % (zones[len(zones) - 1])
+            elif index < len(zones): hr_zone_string = "HR entre %d y %d" % (zones[index - 1], zones[index] - 1)
+            else: hr_zone_string = "HR mayor o igual que %d" % (zones[len(zones) - 1])
             print("Zona %d (%s): %.02f%%" % (index + 1, hr_zone_string, 100 * seconds / total))
     else:
         print("Sin datos")
